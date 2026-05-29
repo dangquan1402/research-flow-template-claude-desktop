@@ -4,6 +4,13 @@ Skeleton for an agentic research project with persistent working memory, Claude 
 
 **This is a template repo, set up for the Claude Desktop workflow.** Instead of a one-shot `npx` scaffolder, you clone this template, open it in Claude (Desktop or Code), and let Claude walk you through setup **step by step** — installing the GitHub CLI for your OS, logging you in, creating your repo, and wiring up a Project board linked to that repo.
 
+Just want to read the steps first (no clone)? Grab the raw README:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/dangquan1402/research-flow-template-claude-desktop/main/README.md
+# or save it:   curl -fsSL .../main/README.md -o README.md
+```
+
 ---
 
 ## Setup — step by step
