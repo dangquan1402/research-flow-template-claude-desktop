@@ -51,7 +51,10 @@ There's no `npx create-research-flow` here. You clone the template, open it in C
 ```bash
 git clone https://github.com/dangquan1402/research-flow-template-claude-desktop.git my-research
 cd my-research
+rm -rf .git          # detach from the template's history — this becomes YOUR repo
 ```
+
+(Downloaded the ZIP instead? There's no `.git` to remove — skip that line.)
 
 Open the `my-research` folder in Claude Desktop or Claude Code. Everything below is typed **inside Claude**.
 
@@ -82,8 +85,9 @@ My project name is: <my-research-project>  (lowercase, hyphens)
 ### 4. Create the repo from this folder
 
 ```
-Create the repo from this folder and push it:
-git init + initial commit, then
+Create the repo from this folder and push it (the template .git was
+removed in step 0, so this is a fresh repo):
+git init && git add -A && initial commit, then
 gh repo create <my-research-project> --public --source=. --remote=origin --push
 ```
 

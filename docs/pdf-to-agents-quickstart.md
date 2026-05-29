@@ -83,9 +83,10 @@ This template lays down `.claude/`, `memory/`, `sources/`, `experiments/`, `outp
 ```bash
 git clone https://github.com/dangquan1402/research-flow-template-claude-desktop.git my-research
 cd my-research
+rm -rf .git          # detach from the template's history — this becomes YOUR repo
 ```
 
-Then open `my-research` in Claude and follow [Set Up Your Project](getting-started): Claude installs `gh` for your OS, logs you in, creates the repo, and links a Project board to it.
+Then open `my-research` in Claude and follow [Set Up Your Project](getting-started): Claude installs `gh` for your OS, logs you in, creates the repo (fresh `git init` → `gh repo create`), and links a Project board to it.
 
 **Output (after setup)**
 

@@ -12,12 +12,15 @@ Skeleton for an agentic research project with persistent working memory, Claude 
 
 ### Step 0 — Get the template onto your machine
 
-Clone this template (or download it as a ZIP and unzip it), then open the folder in Claude Desktop or Claude Code:
+Clone this template (or download it as a ZIP and unzip it), then **detach it from the template's git history** so it becomes *your* repo:
 
 ```bash
 git clone https://github.com/dangquan1402/research-flow-template-claude-desktop.git my-research
 cd my-research
+rm -rf .git          # drop the template's history + origin — this is now YOUR project
 ```
+
+(If you downloaded the ZIP instead of cloning, there's no `.git` to remove — skip that line.)
 
 Everything below is **typed inside Claude**, with this folder open.
 
@@ -65,8 +68,9 @@ Use it as the GitHub repo name (lowercase, hyphens — no spaces).
 Claude turns the current folder into a brand-new GitHub repo under your account and pushes it:
 
 ```
-Create a new GitHub repo named <my-research-project> from this folder:
-- git init + initial commit if not already a repo
+Create a new GitHub repo named <my-research-project> from this folder
+(I removed the template's .git in Step 0, so this is a fresh repo):
+- git init && git add -A && initial commit
 - gh repo create <my-research-project> --public --source=. --remote=origin --push
 Print the repo URL when done.
 ```
