@@ -4,6 +4,8 @@ Skeleton for an agentic research project with persistent working memory, Claude 
 
 **This is a template repo, set up for the Claude Desktop workflow.** Instead of a one-shot `npx` scaffolder, you clone this template, open it in Claude (Desktop or Code), and let Claude walk you through setup **step by step** — installing the GitHub CLI for your OS, logging you in, creating your repo, and wiring up a Project board linked to that repo.
 
+> **Handed this to Claude with just the link?** Tell it: *"Clone https://github.com/dangquan1402/research-flow-template-claude-desktop, `cd` into it, `rm -rf .git`, then follow the Setup section of the README to set me up."* Claude clones the repo, reads this file, and runs the setup for you. (The `/setup` slash command becomes available after you reopen the new folder in a fresh session.)
+
 Just want to read the steps first (no clone)? Grab the raw README:
 
 ```bash
@@ -15,7 +17,9 @@ curl -fsSL https://raw.githubusercontent.com/dangquan1402/research-flow-template
 
 ## Setup — step by step
 
-> You don't run most of these commands yourself. Open this folder in Claude and paste the prompt under each step; Claude detects your OS, runs the command, and reports back. The only thing Claude can't do for you is the interactive browser login in Step 2.
+> **Fastest path:** after Step 0 below, just run **`/setup`** inside Claude. That skill does Steps 1–6 for you — it checks for the GitHub CLI and **installs it for your OS if missing**, runs `gh auth login`, asks for your project name, creates the repo, and links a Project board. The manual steps below are the same flow spelled out, in case you want to run them one at a time.
+
+> You don't run most of these commands yourself. Open this folder in Claude and paste the prompt under each step (or run `/setup`); Claude detects your OS, runs the command, and reports back. The only thing Claude can't do for you is the interactive browser login in Step 2.
 
 ### Step 0 — Get the template onto your machine
 
@@ -119,9 +123,9 @@ You're ready to start the research loop.
 
 ```
 .claude/
-  skills/     /research, /analyze, /import, /experiment, /synthesize,
-              /distill, /evidence, /verify, /examples, /critique,
-              /lint, /read-pdf
+  skills/     /setup (one-shot bootstrap), /research, /analyze, /import,
+              /experiment, /synthesize, /distill, /evidence, /verify,
+              /examples, /critique, /lint, /read-pdf
   hooks/      Source immutability, branch protection, memory-update reminders
   settings.json
 

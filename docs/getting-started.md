@@ -46,6 +46,8 @@ uv add torch        # or jax, tensorflow, scikit-learn, etc.
 
 There's no `npx create-research-flow` here. You clone the template, open it in Claude, and Claude walks you through each step — paste the prompt under each one and Claude runs it for you.
 
+**Fastest path:** after step 0, run **`/setup`** inside Claude — it checks for the GitHub CLI and installs it for your OS if missing, runs `gh auth login`, asks for your project name, creates the repo, and links a Project board. The numbered steps below are that same flow, spelled out to run one at a time.
+
 Want to read the steps first without cloning? Grab the raw README:
 
 ```bash
