@@ -84,6 +84,8 @@ Print the repo URL when done.
 
 (Use `--private` instead of `--public` if you'd rather keep it closed.)
 
+> **Restart here.** Once the repo is created and pushed, **quit Claude and start a fresh session opened on the new `my-research` folder.** It's now a real git repo with its own `origin`, `CLAUDE.md`, skills, and hooks — a clean session loads that project context from the start. Reopen the folder, then continue with Step 5.
+
 ### Step 5 — Create a Project board **linked to this repo**
 
 Rather than a standalone board floating in your account, you want a Project **linked to the dedicated repo**, with a layout that fits research tracking and your existing issues imported into it.

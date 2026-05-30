@@ -46,6 +46,13 @@ uv add torch        # or jax, tensorflow, scikit-learn, etc.
 
 There's no `npx create-research-flow` here. You clone the template, open it in Claude, and Claude walks you through each step — paste the prompt under each one and Claude runs it for you.
 
+Want to read the steps first without cloning? Grab the raw README:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/dangquan1402/research-flow-template-claude-desktop/main/README.md
+# or save it:   curl -fsSL .../main/README.md -o README.md
+```
+
 ### 0. Get the template
 
 ```bash
@@ -90,6 +97,8 @@ removed in step 0, so this is a fresh repo):
 git init && git add -A && initial commit, then
 gh repo create <my-research-project> --public --source=. --remote=origin --push
 ```
+
+> **Restart here.** Once the repo is created and pushed, **quit Claude and start a fresh session opened on the new `my-research` folder.** This is now a real git repo with its own `origin`, `CLAUDE.md`, skills, and hooks — a clean session loads that project context from the start. Reopen the folder, then continue with Step 5.
 
 ### 5. Create a Project board linked to the repo
 
