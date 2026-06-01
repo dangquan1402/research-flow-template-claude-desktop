@@ -40,11 +40,14 @@ Replacement = str | Callable[[re.Match[str]], str]
 
 # Order matters: longest patterns first so they don't get half-replaced.
 SANITIZE_RULES: list[tuple[re.Pattern[str], Replacement]] = [
-    # GitHub personal access tokens (gho_, ghp_, ghs_, github_pat_) — also catches truncated/elided forms
+    # GitHub personal access tokens (gho_, ghp_, ghs_, github_pat_)
+    # — also catches truncated/elided forms
     (re.compile(r"\b(?:gh[opsu]_|github_pat_)[A-Za-z0-9_]{3,}\.{0,3}"), "gho_REDACTED"),
     # SSH public-key material (long base64 blob in ssh-rsa/ssh-ed25519 strings)
-    (re.compile(r"(ssh-(?:rsa|ed25519|dss|ecdsa))\s+[A-Za-z0-9+/=]{40,}(\s+\S+)?"),
-     r"\1 <PUBKEY-REDACTED>"),
+    (
+        re.compile(r"(ssh-(?:rsa|ed25519|dss|ecdsa))\s+[A-Za-z0-9+/=]{40,}(\s+\S+)?"),
+        r"\1 <PUBKEY-REDACTED>",
+    ),
     # Private SSH key paths under ~/.ssh/
     (re.compile(r"~/\.ssh/[A-Za-z0-9_.-]+(?!\.pub)\b"), "~/.ssh/<your-ssh-key>"),
     (re.compile(r"/Users/[^/]+/\.ssh/[A-Za-z0-9_.-]+(?!\.pub)\b"), "~/.ssh/<your-ssh-key>"),
@@ -52,8 +55,10 @@ SANITIZE_RULES: list[tuple[re.Pattern[str], Replacement]] = [
     (re.compile(r"\bssh\d+\.vast\.ai\b"), "<vast-host>"),
     (re.compile(r"-[pP]\s+\d{4,5}\b"), lambda m: f"{m.group(0)[:2]} <port>"),
     # Vast.ai instance IDs (8-digit numbers near 'instance', 'destroy', etc.)
-    (re.compile(r"(instance\s+|destroy\s+instance\s+|new_contract['\"]?:\s*)\d{6,9}"),
-     r"\1<INSTANCE_ID>"),
+    (
+        re.compile(r"(instance\s+|destroy\s+instance\s+|new_contract['\"]?:\s*)\d{6,9}"),
+        r"\1<INSTANCE_ID>",
+    ),
     (re.compile(r"\b37056539\b"), "<INSTANCE_ID>"),  # this session's specific ID
     (re.compile(r"\b8936966\b"), "<OFFER_ID>"),
     # Personal identifiers (catch full + truncated forms)
@@ -110,25 +115,28 @@ def extract_text_and_tools(content: list | str) -> list[dict]:
         elif t == "thinking":
             out.append({"type": "thinking", "text": block.get("thinking", "")})
         elif t == "tool_use":
-            out.append({
-                "type": "tool_use",
-                "name": block.get("name", "?"),
-                "input": block.get("input", {}),
-                "id": block.get("id", ""),
-            })
+            out.append(
+                {
+                    "type": "tool_use",
+                    "name": block.get("name", "?"),
+                    "input": block.get("input", {}),
+                    "id": block.get("id", ""),
+                }
+            )
         elif t == "tool_result":
             content_val = block.get("content", "")
             if isinstance(content_val, list):
                 content_val = "\n".join(
-                    b.get("text", "") if isinstance(b, dict) else str(b)
-                    for b in content_val
+                    b.get("text", "") if isinstance(b, dict) else str(b) for b in content_val
                 )
-            out.append({
-                "type": "tool_result",
-                "tool_use_id": block.get("tool_use_id", ""),
-                "text": str(content_val),
-                "is_error": block.get("is_error", False),
-            })
+            out.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": block.get("tool_use_id", ""),
+                    "text": str(content_val),
+                    "is_error": block.get("is_error", False),
+                }
+            )
     return out
 
 
@@ -403,13 +411,15 @@ def render_text_as_paragraphs(text: str) -> str:
 def _summary_line(label: str, target: str) -> str:
     """Format like Claude Code: 'Tool(args)' with parens added by CSS."""
     label_html = f"<span class='tool-label'>{html.escape(label)}</span>"
-    target_html = (f"<span class='tool-target'>{html.escape(target)}</span>"
-                   if target else "<span class='tool-target'></span>")
+    target_html = (
+        f"<span class='tool-target'>{html.escape(target)}</span>"
+        if target
+        else "<span class='tool-target'></span>"
+    )
     return label_html + target_html
 
 
-def render_tool_use(block: dict, do_sanitize: bool,
-                    pending_results: dict[str, dict]) -> str:
+def render_tool_use(block: dict, do_sanitize: bool, pending_results: dict[str, dict]) -> str:
     name = block["name"]
     inp = block.get("input", {})
     tool_id = block.get("id", "")
@@ -478,8 +488,10 @@ def render_tool_use(block: dict, do_sanitize: bool,
         if original_lines > max_lines:
             kept = "\n".join(text.split("\n")[:max_lines])
             extra = original_lines - max_lines
-            text_html = (f"<pre><code>{html.escape(kept)}</code></pre>"
-                         f"<p class='trunc'>… +{extra} lines (ctrl+o to expand)</p>")
+            text_html = (
+                f"<pre><code>{html.escape(kept)}</code></pre>"
+                f"<p class='trunc'>… +{extra} lines (ctrl+o to expand)</p>"
+            )
         elif text.strip():
             text_html = f"<pre><code>{html.escape(text)}</code></pre>"
         else:
@@ -492,11 +504,15 @@ def render_tool_use(block: dict, do_sanitize: bool,
     if not body:
         # No body — close the details tag immediately. Don't render empty .body
         # because the ⎿ glyph attached to it would look orphaned.
-        return (f"<details class='{error_cls.strip()} no-body' open>"
-                f"<summary>{summary}</summary></details>")
-    return (f"<details class='{error_cls.strip()}' open>"
-            f"<summary>{summary}</summary>"
-            f"<div class='body'>{body}</div></details>")
+        return (
+            f"<details class='{error_cls.strip()} no-body' open>"
+            f"<summary>{summary}</summary></details>"
+        )
+    return (
+        f"<details class='{error_cls.strip()}' open>"
+        f"<summary>{summary}</summary>"
+        f"<div class='body'>{body}</div></details>"
+    )
 
 
 def render_tool_result(block: dict, do_sanitize: bool) -> str:
@@ -508,17 +524,22 @@ def render_tool_result(block: dict, do_sanitize: bool) -> str:
     lines = text.count("\n") + 1
     if lines > 30:
         kept = "\n".join(text.split("\n")[:30])
-        text_html = (f"<pre><code>{html.escape(kept)}</code></pre>"
-                     f"<p class='trunc'>… +{lines - 30} lines (ctrl+o to expand)</p>")
+        text_html = (
+            f"<pre><code>{html.escape(kept)}</code></pre>"
+            f"<p class='trunc'>… +{lines - 30} lines (ctrl+o to expand)</p>"
+        )
     else:
         text_html = f"<pre><code>{html.escape(text)}</code></pre>"
     cls = "tool-error" if block.get("is_error") else ""
-    return (f"<details class='{cls}' open><summary>{_summary_line('Result', '')}</summary>"
-            f"<div class='body'>{text_html}</div></details>")
+    return (
+        f"<details class='{cls}' open><summary>{_summary_line('Result', '')}</summary>"
+        f"<div class='body'>{text_html}</div></details>"
+    )
 
 
-def render_turn(role: str, blocks: list[dict], do_sanitize: bool,
-                pending_results: dict[str, dict]) -> str:
+def render_turn(
+    role: str, blocks: list[dict], do_sanitize: bool, pending_results: dict[str, dict]
+) -> str:
     parts = [f"<div class='role'>{role}</div>"]
     for b in blocks:
         t = b["type"]
@@ -533,8 +554,10 @@ def render_turn(role: str, blocks: list[dict], do_sanitize: bool,
                 continue
             if do_sanitize:
                 text = sanitize(text)
-            parts.append(f"<div class='thinking'><div class='body'>"
-                         f"{render_text_as_paragraphs(text)}</div></div>")
+            parts.append(
+                f"<div class='thinking'><div class='body'>"
+                f"{render_text_as_paragraphs(text)}</div></div>"
+            )
         elif t == "tool_use":
             parts.append(render_tool_use(b, do_sanitize, pending_results))
         elif t == "tool_result":
@@ -605,7 +628,10 @@ def build_turns(events: list[dict]) -> list[Turn]:
         # Skip system-reminder-only user messages
         if role == "user":
             joined = " ".join(b.get("text", "") for b in blocks if b["type"] == "text")
-            if joined.strip().startswith("<system-reminder>") and "</system-reminder>" in joined[-50:]:
+            if (
+                joined.strip().startswith("<system-reminder>")
+                and "</system-reminder>" in joined[-50:]
+            ):
                 continue
         turns.append(Turn(role=role, blocks=blocks, timestamp=ev.get("timestamp", "")))
     return turns
@@ -618,8 +644,11 @@ def main() -> None:
     ap.add_argument("--end-prompt", default=None)
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--title", default="Conversation Transcript")
-    ap.add_argument("--intro", default="An exported Claude Code conversation. "
-                                       "Tool calls and results are collapsed by default — click to expand.")
+    ap.add_argument(
+        "--intro",
+        default="An exported Claude Code conversation. "
+        "Tool calls and results are collapsed by default — click to expand.",
+    )
     ap.add_argument("--no-sanitize", action="store_true")
     args = ap.parse_args()
 
@@ -631,8 +660,10 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(out_html, encoding="utf-8")
-    print(f"wrote {args.out} ({len(turns)} turns, {args.out.stat().st_size:,} bytes, "
-          f"sanitize={'on' if do_sanitize else 'off'})")
+    print(
+        f"wrote {args.out} ({len(turns)} turns, {args.out.stat().st_size:,} bytes, "
+        f"sanitize={'on' if do_sanitize else 'off'})"
+    )
 
 
 if __name__ == "__main__":

@@ -89,6 +89,8 @@ For each decision, ensure a corresponding baseline config exists in `experiments
 
 ### Step 6: Commit
 
+Run `/distill` on a `synthesis/` or `research/` branch — not `main` (the commit hook blocks it, and the `synthesis(...)` prefix matches the `synthesis/` branch type). If you're still on the parent `research/` branch and want a dedicated branch, `git checkout -b synthesis/GH-{issue}-distill-{slug}` first; otherwise committing on the `research/` branch is fine (use a `research({scope}):` prefix in that case).
+
 ```bash
 git add memory/decisions/ experiments/configs/baselines/ memory/index.md memory/log.md
 git commit -m "synthesis({scope}): distill {N} decisions from {theme/question}"

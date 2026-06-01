@@ -125,17 +125,24 @@ You're ready to start the research loop.
 .claude/
   skills/     /setup (one-shot bootstrap), /research, /analyze, /import,
               /experiment, /synthesize, /distill, /evidence, /verify,
-              /examples, /critique, /lint, /read-pdf
+              /examples, /critique, /lint, /read-pdf,
+              /vastai, /quickstart   (infrastructure helpers)
   hooks/      Source immutability, branch protection, memory-update reminders
   settings.json
 
 .github/
   ISSUE_TEMPLATE/   research-goal, hypothesis, finding
+  workflows/        ci.yml — runs ruff check + format on push/PR
 
-docs/
-  claude-code-guide.md    Every Claude Code primitive explained
-  git-workflow.md         Branch strategy and multi-agent dispatch
-  memory-page-template.md Frontmatter templates for memory pages
+docs/                       8 guides (see "Read next" below)
+  claude-code-quickstart.md  Start-here entry point
+  getting-started.md         Prerequisites and your first session
+  pdf-to-agents-quickstart.md PDF → memory → issues → agent team
+  sample-pipeline.md         15-min end-to-end canary on Vast.ai
+  claude-code-guide.md       Every Claude Code primitive explained
+  git-workflow.md            Branch strategy and multi-agent dispatch
+  memory-page-template.md    Frontmatter templates for memory pages
+  index.md                   Jekyll/Pages home
 
 memory/
   index.md, log.md, entity-registry.json
@@ -143,11 +150,14 @@ memory/
 
 sources/                  Immutable raw material (write-once)
 goals/                    Active research goal definitions
-outputs/                  Deliverables (reports, evidence, verification, examples, critiques)
+outputs/                  Deliverables (reports + evidence/, verification/, examples/, critiques/)
 experiments/              Blank scaffold — add your own training code and framework
+examples/                 Runnable demos — quickstart/ and single-gpu-experiment/ (train.py + expected/ + sample-run/)
+scripts/                  Helper scripts — build-docs-pdf.py, export-conversation.py
 
 CLAUDE.md                 The research loop, memory rules, git flow, conventions
-pyproject.toml            uv-managed Python deps (loguru, pyyaml, pymupdf, tqdm)
+LICENSE                   MIT
+pyproject.toml            uv-managed Python deps (loguru, pyyaml, pymupdf, tqdm, vastai)
 ```
 
 ## How it works
@@ -174,7 +184,7 @@ The three-layer memory model:
 ```bash
 gem install bundler && bundle install
 bundle exec jekyll serve
-# open http://localhost:4000
+# open http://localhost:4000/docs/   (the docs home page renders under /docs/)
 ```
 
 ## License

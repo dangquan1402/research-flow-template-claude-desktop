@@ -48,8 +48,10 @@ EOF
 
 ### Step 2: Add Issue to GitHub Project
 
+`{PROJECT_NUMBER}` is the number returned by `gh project create` during `/setup` (README → Setup, Step 5). Use `@me` for the owner so this works for whoever cloned the template:
+
 ```bash
-gh project item-add {PROJECT_NUMBER} --owner dangquan1402 --url {issue_url}
+gh project item-add {PROJECT_NUMBER} --owner @me --url {issue_url}
 ```
 
 ### Step 3: Create Research Branch
@@ -101,7 +103,13 @@ For each hypothesis angle:
 gh issue create \
   --title "Hypothesis: {angle-title}" \
   --label "hypothesis" \
-  --body "Parent: #{parent_issue_number}\n\n## Angle\n{description}"
+  --body "$(cat <<'EOF'
+Parent: #{parent_issue_number}
+
+## Angle
+{description}
+EOF
+)"
 ```
 
 2. Link as sub-issue:

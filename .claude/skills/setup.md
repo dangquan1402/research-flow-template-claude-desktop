@@ -90,7 +90,14 @@ gh project create --owner @me --title "<project-name>"
 gh project link <project-number> --owner @me --repo <me>/<project-name>
 ```
 
-Print the project URL. Then tell the user the two **browser-only** finishing touches (the CLI can't do these):
+Print the project URL. **Then persist the project number + repo so later skills (`/research`) don't hardcode them** — fill in CLAUDE.md's `## GitHub Project Tracking` placeholders:
+
+- `**Project:**` → the project number + URL
+- `**Repo:**` → `<me>/<project-name>`
+
+(`/research` uses `--owner @me` and references this `{PROJECT_NUMBER}`.)
+
+Then tell the user the two **browser-only** finishing touches (the CLI can't do these):
 
 - **Choose the layout** — open the project, click the view tab, pick **Board** (`Backlog | In Progress | Synthesizing | Done`) or **Table**.
 - **Import existing issues** — use **"Add items from a repository"** to pull this repo's issues onto the board. New issues you open later are added with `gh project item-add <project-number> --owner @me --url <issue-url>`.
@@ -103,6 +110,8 @@ for L in research-goal hypothesis finding synthesis maintenance; do
 done
 uv sync
 ```
+
+Also update the `LICENSE` copyright line to the user's name/org (it ships with the template author's name): replace `Copyright (c) <year> dangquan1402` with theirs, or confirm they want to keep MIT as-is.
 
 ## Done
 

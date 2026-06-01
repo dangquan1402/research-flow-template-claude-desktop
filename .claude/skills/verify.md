@@ -23,7 +23,7 @@ Read in order:
 3. All files in `memory/findings/`
 4. All files in `memory/themes/`
 5. `experiments/results/` — existing experiment data
-6. `experiments/config.py` — available experiment parameters
+6. `experiments/configs/` — any experiment configs/params you have added (e.g. `<slug>.md` per `/experiment`, baselines per `/distill`); `experiments/` ships as a blank scaffold, so this may be empty
 7. `outputs/evidence/` — any existing evidence artifacts
 
 ### Step 2: Decompose Claims Into Verifiable Assertions
@@ -65,7 +65,7 @@ def verify_{claim_slug}():
     Method: {how we verify it}
     """
     # ... verification logic ...
-    
+
     # RESULT
     result = {
         "claim": "{claim text}",
@@ -98,12 +98,16 @@ if __name__ == "__main__":
 
 Execute all verification scripts:
 ```bash
+mkdir -p outputs/verification
 for f in outputs/verification/*_verify.py; do
+    [ -e "$f" ] || continue
     echo "=== Running: $f ==="
-    python "$f"
+    uv run python "$f"
     echo ""
 done
 ```
+
+> If a script imports a package not in `pyproject.toml` (e.g. `numpy`, `scipy`), `uv add <pkg>` first.
 
 Collect results into `outputs/verification/results.json`:
 ```json

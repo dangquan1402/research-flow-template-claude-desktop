@@ -6,7 +6,7 @@ user_invocable: true
 
 # /quickstart — Pipeline Canary
 
-Drives the [`docs/sample-pipeline.md`](../../docs/sample-pipeline.md) walkthrough end-to-end. **Purpose: prove the rent → ssh → scp → train → sync → report pipeline works on this machine.** Not for real research.
+Drives the [`docs/sample-pipeline.md`](../../docs/sample-pipeline.md) walkthrough end-to-end. **Purpose: prove the rent → ssh → scp → train → sync → synthesize pipeline works on this machine.** Not for real research.
 
 ## When to use
 
@@ -82,6 +82,8 @@ ssh -i <ssh_key> -p <port> root@<host> 'set -e; cd /workspace; mkdir -p logs res
 ```
 
 > **Bash precedence gotcha:** `cmd1 && cmd2 & cmd3` parses as `(cmd1 && cmd2) & cmd3` — so `mkdir && nohup python &` puts mkdir into background and the next line races against it. Use a subshell `(nohup ... &)` and a brief `sleep` + `pgrep` to capture the actual training PID, not the shell wrapper.
+
+> **No `--max-seconds` here (unlike `/vastai`'s guardrail):** the canary demo `train.py` finishes in seconds, so the wall-clock cap is the Step 6 poll timeout (10 min) rather than a script flag. Real experiments should still pass `--max-seconds` per the `/vastai` cost-guardrail convention.
 
 Save the returned PID into `experiments/.vastai-instance.json` under `active_job`:
 

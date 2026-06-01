@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Sample Pipeline (Quickstart)
-nav_order: 4
+nav_order: 5
 ---
 
 # Sample Pipeline — End-to-End on Vast.ai
@@ -24,13 +24,13 @@ Every step has a **✅ Verify** checkpoint. If your output matches, that step is
 
 ## Why this exists
 
-The template's skills (`/vastai`, `/experiment`, `/synthesize`, `/report`) compose into a long pipeline. Without a known-good sample, you can't tell whether step N is broken because of your setup, the template, or the GPU. This walkthrough is the **canary**: if it runs clean end-to-end, your installation is wired correctly.
+The template's skills (`/vastai`, `/experiment`, `/synthesize`) compose into a long pipeline. Without a known-good sample, you can't tell whether step N is broken because of your setup, the template, or the GPU. This walkthrough is the **canary**: if it runs clean end-to-end, your installation is wired correctly.
 
 What you'll produce:
 - A trained model with `final_acc == 1.0` on synthetic data
 - `experiments/results/run-log.jsonl` entry
 - `memory/findings/quickstart-pipeline-works.md`
-- `outputs/quickstart-report.html`
+- `outputs/quickstart-synthesis.md`
 
 ---
 
@@ -245,18 +245,17 @@ All three should hit.
 
 ---
 
-## Step 10 — Synthesize and report
+## Step 10 — Synthesize
 
 ```
-/synthesize
-/report                # if you've added the /report skill; otherwise /synthesize already drops outputs/synthesis-*.md
+/synthesize            # consolidates findings and drops a deliverable in outputs/
 ```
 
 ✅ **Verify:**
 ```bash
 ls outputs/
 ```
-Should contain a synthesis markdown file (and an HTML report if `/report` exists) referencing the quickstart finding.
+Should contain a synthesis markdown file (e.g. `outputs/quickstart-synthesis.md`) referencing the quickstart finding.
 
 ---
 

@@ -1,6 +1,6 @@
 # Quickstart — End-to-End Pipeline Sample
 
-A tiny training run that proves the **rent → ssh → scp → train → sync → report** loop works on your machine + Vast.ai.
+A tiny training run that proves the **rent → ssh → scp → train → sync → synthesize** loop works on your machine + Vast.ai.
 
 ## What's here
 
@@ -16,4 +16,4 @@ Don't run this directly. Follow [`docs/sample-pipeline.md`](../../docs/sample-pi
 
 ## Why this exists
 
-The template's `/vastai`, `/experiment`, `/synthesize`, `/report` skills compose into a long pipeline. Without a concrete sample, a new user can't tell whether step N broke because *they* did something wrong or because the template did. This demo gives a known-good baseline: run it, compare against `expected/`, and if outputs match, the whole pipeline is wired correctly on your machine.
+The template's `/vastai`, `/experiment`, `/synthesize` skills compose into a long pipeline. Without a concrete sample, a new user can't tell whether step N broke because *they* did something wrong or because the template did. This demo gives a known-good baseline: run it, compare against `expected/`, and if outputs match, the whole pipeline is wired correctly on your machine.

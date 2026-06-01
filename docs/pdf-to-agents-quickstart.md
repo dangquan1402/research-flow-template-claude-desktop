@@ -1,7 +1,7 @@
 ---
 layout: default
 title: PDF → Agents Quickstart
-nav_order: 2
+nav_order: 4
 ---
 
 # PDF → Agents Quickstart

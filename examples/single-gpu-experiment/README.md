@@ -2,7 +2,15 @@
 
 A narrated walkthrough of one real research question taken end-to-end with the
 template: define question → rent GPU → write script → train → sync → write up
-finding → terminate. Total cost on Vast.ai: **~$0.15** on an RTX 4090.
+finding → terminate. Total cost on Vast.ai: **~$0.05** (the shipped sample run
+was captured on an RTX 3090).
+
+> **Note:** the concrete numbers below match the artifacts checked in under
+> [`expected/`](expected/) and [`sample-run/`](sample-run/) — a short
+> 2000-step run that demonstrates the pipeline but does **not** fully converge
+> (`best_val_loss ≈ 2.33`; nanoGPT `shakespeare_char` needs ~5000 steps to reach
+> ~1.5). Treat it as a *pipeline-works baseline*, not a tight transformer
+> baseline. Bump `STEPS` in `train.py` and re-run for the latter.
 
 Unlike [`examples/quickstart/`](../quickstart/) — which is a synthetic canary
 that proves the pipeline *plumbing* works — this example produces a **real
@@ -89,11 +97,11 @@ Now back in Claude Code:
 **You:**
 > /vastai rent
 >
-> 4090, 20GB disk, pytorch/pytorch:latest image, no jupyter.
-> Guardrails: dph_max=$0.40/hr, runtime_minutes=10 (training is ~5 min, give 2× margin → --max-seconds=1200).
+> RTX 3090 (or 4090), 20GB disk, pytorch/pytorch:latest image, no jupyter.
+> Guardrails: dph_max=$0.40/hr, runtime_minutes=2 (training is ~30s on a 3090, generous margin → --max-seconds=60).
 
 **Claude:**
-- Shows projected cost: `$0.40 × 10/60 = $0.07` if it runs the full expected window at the cap rate
+- Shows projected cost: `$0.40 × 2/60 ≈ $0.01` if it runs the full expected window at the cap rate
 - Reminds you that the *hard* ceiling is your account balance (autobilling OFF) — Vast.ai has no per-instance auto-stop, so wall-clock discipline lives in the training script
 - Runs `vastai search offers 'reliability>0.95 num_gpus=1 gpu_name=RTX_4090 dph<0.40' --order dph_total --limit 5`
 - Picks the cheapest verified host and creates the instance with
@@ -110,8 +118,8 @@ it'll ask whether you want to raise `dph_max`. That's by design.
 cat experiments/.vastai-instance.json | jq '{id, dph, ssh_host, guardrails}'
 vastai show instances     # should say "running"
 ```
-The `guardrails.max_seconds_arg` value (`1200` in this example) is what gets
-passed to `train.py --max-seconds 1200` in step 6 — that's where the
+The `guardrails.max_seconds_arg` value (`60` in this example) is what gets
+passed to `train.py --max-seconds 60` in step 6 — that's where the
 wall-clock cap actually lives. Vast.ai itself does not enforce one.
 
 ---
@@ -126,7 +134,7 @@ wall-clock cap actually lives. Vast.ai itself does not enforce one.
 ssh -i <ssh_key> -p <port> -o StrictHostKeyChecking=accept-new root@<host> 'nvidia-smi'
 ```
 
-✅ **Verify:** GPU name (`NVIDIA GeForce RTX 4090`), driver, CUDA version all
+✅ **Verify:** GPU name (`NVIDIA GeForce RTX 3090` / `4090`), driver, CUDA version all
 print. If you see `Permission denied (publickey)`, see the
 [troubleshooting table in sample-pipeline.md](../../docs/sample-pipeline.md#troubleshooting).
 
@@ -159,15 +167,15 @@ scp -i <ssh_key> -P <port> examples/single-gpu-experiment/train.py \
 ssh -i <ssh_key> -p <port> root@<host> << 'EOF'
 cd /workspace
 mkdir -p logs results
-nohup python train.py --max-seconds 1200 > logs/run.log 2>&1 &
+nohup python train.py --max-seconds 60 > logs/run.log 2>&1 &
 echo $! > logs/run.pid
 echo "Started PID: $(cat logs/run.pid)"
 EOF
 ```
 
 SSH returns immediately. Training runs detached — your laptop can sleep.
-The `--max-seconds 1200` flag is the script-side wall-clock cap: even if the
-loss explodes or the loop hangs, the process exits cleanly after 20 minutes.
+The `--max-seconds 60` flag is the script-side wall-clock cap: even if the
+loss explodes or the loop hangs, the process exits cleanly after 60 seconds.
 That's the only wall-clock cap that actually fires — Vast.ai has no
 equivalent server-side feature.
 
@@ -188,10 +196,10 @@ seconds, stops when it sees the `done in` marker.
 
 ✅ **Verify:** log lines look like:
 ```
-[baseline] step=100/2000 train_loss=2.5189 val_loss=2.5044 lr=0.00030
+[baseline] step=100/2000 train_loss=6.2107 val_loss=5.9042 lr=0.00030
 ...
-[baseline] step=2000/2000 train_loss=1.5388 val_loss=1.6234 lr=0.00000
-[baseline] done in 184.7s  best_val=1.6201  final_val=1.6234  → results/metrics.json
+[baseline] step=2000/2000 train_loss=2.3000 val_loss=2.3341 lr=0.00000
+[baseline] done in 28.4s  best_val=2.3322  final_val=2.3341  → results/metrics.json
 ```
 
 Compare against [`sample-run/run.log`](sample-run/run.log). Your numbers
@@ -219,7 +227,7 @@ rsync -avz -e "ssh -i <ssh_key> -p <port>" \
 ```bash
 cat examples/single-gpu-experiment/results/metrics.json | jq '.best_val_loss, .device'
 ```
-Should show `~1.62` and `"cuda"`. Compare against
+Should show `~2.33` and `"cuda"`. Compare against
 [`expected/metrics.json`](expected/metrics.json) — within ~0.05 is fine.
 
 ---
@@ -231,7 +239,7 @@ Should show `~1.62` and `"cuda"`. Compare against
 
 **Claude:**
 ```bash
-echo '{"date":"'"$(date -u +%Y-%m-%d)"'","experiment":"tiny-transformer-baseline","status":"success","notes":"best_val_loss=1.6201 on RTX 4090, 184s. See examples/single-gpu-experiment/results/metrics.json"}' \
+echo '{"date":"'"$(date -u +%Y-%m-%d)"'","experiment":"tiny-transformer-baseline","status":"success","notes":"best_val_loss=2.3322 on RTX 3090, 28s (pipeline-works baseline, not converged). See examples/single-gpu-experiment/results/metrics.json"}' \
   >> experiments/results/run-log.jsonl
 ```
 
@@ -242,19 +250,21 @@ echo '{"date":"'"$(date -u +%Y-%m-%d)"'","experiment":"tiny-transformer-baseline
 **You:**
 > /experiment
 >
-> Hypothesis: a 4-layer, 128-dim char-transformer can reach val loss < 1.7 on
-> Tiny Shakespeare in 2000 steps. Acceptance: best_val_loss < 1.7. Cite
-> examples/single-gpu-experiment/results/metrics.json. Write a positive
+> Hypothesis: a 4-layer, 128-dim char-transformer trains end-to-end and records
+> a baseline val loss on Tiny Shakespeare in 2000 steps. Acceptance:
+> best_val_loss recorded and < 2.5 (a *pipeline-works* baseline — 2000 steps
+> isn't enough to truly converge; see the `_note` in expected/metrics.json).
+> Cite examples/single-gpu-experiment/results/metrics.json. Write a positive
 > finding — this is our baseline number.
 
 **Claude:**
 - Creates `memory/findings/tiny-transformer-shakespeare-baseline.md` with the
-  hypothesis, the measured number (`best_val_loss=1.6201`), the hparams, and
+  hypothesis, the measured number (`best_val_loss=2.3322`), the hparams, and
   a citation to `metrics.json`
 - Adds a **FUNGI counter-argument**: "What would disprove this as a baseline?
-  — A different seed giving a substantially different number, or a
-  non-converged run that just happened to bottom out at 1.62." Marks
-  confidence `medium` until reproduced.
+  — A different seed giving a substantially different number, or reading 2.33
+  as a *converged* result (it isn't — 2000 steps under-trains the model)." Marks
+  confidence `medium` until reproduced with more steps.
 - Updates `memory/index.md` (new finding listed)
 - Appends to `memory/log.md`:
   `## [YYYY-MM-DD] experiment | tiny-transformer-baseline → finding`
@@ -291,8 +301,8 @@ gh issue list --label finding
 test ! -f experiments/.vastai-instance.json && echo "cleaned up"
 tail -n 1 experiments/.vastai-history.jsonl
 ```
-Cost should be **$0.05–$0.15** for this experiment — well in line with the
-$0.07 projection from step 3.
+Cost should be **$0.01–$0.05** for this experiment — well in line with the
+projection from step 3.
 
 ---
 
@@ -311,7 +321,7 @@ $0.07 projection from step 3.
 
 The baseline is now **citable** from any future hypothesis branch. When you
 later try "what if I double the depth," your finding can say
-*"baseline = 1.6201 (see [tiny-transformer-shakespeare-baseline]); depth-8
+*"baseline = 2.3322 (see [tiny-transformer-shakespeare-baseline]); depth-8
 variant = X.XX, delta = ..."* — and that's the moment the wiki-style memory
 layer pays off.
 
@@ -352,9 +362,9 @@ Experiment-specific issues:
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `best_val_loss > 2.0` | Training didn't converge — wrong device, NaN loss, bad seed | Check `metrics.json.device == "cuda"`; inspect `loss_curve.csv` for divergence |
+| `best_val_loss > 2.6` | Worse than the ~2.33 baseline — wrong device, NaN loss, bad seed (note 2.33 is expected for this short under-trained run) | Check `metrics.json.device == "cuda"`; inspect `loss_curve.csv` for divergence |
 | `val_loss < train_loss` consistently | Eval batches too small (noisy) | Increase `EVAL_BATCHES` in `train.py` |
-| Wall time > 10 min on a 4090 | Wrong GPU rented, or CPU fallback | Confirm `nvidia-smi` shows the 4090 *and* `metrics.json.device == "cuda"` |
+| Wall time > 2 min on a recent GPU | Wrong GPU rented, or CPU fallback | Confirm `nvidia-smi` shows the GPU *and* `metrics.json.device == "cuda"` |
 | Download hang on first run | Outbound HTTPS blocked on the box | Pre-stage `input.txt` and `scp` it alongside `train.py` |
 | `vastai search offers` returns 0 results | `dph_max` too tight for the chosen GPU | Ask Claude to raise the cap (e.g., `dph<0.60`). Don't drop the filter entirely — that's what it's there for. |
 | Final cost > 3× projected | Box stayed up much longer than expected runtime | Surfaced by the `terminate` post-mortem. Lower `runtime_minutes` next time, terminate sooner, and double-check `--max-seconds` is actually being passed to the training script. |

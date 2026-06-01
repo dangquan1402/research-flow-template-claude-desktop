@@ -2,6 +2,8 @@
 name = "research-flow"
 version = "0.1.0"
 description = "Agentic research system with persistent working memory"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "loguru>=0.7",
@@ -17,15 +19,15 @@ dev = [
     "pre-commit>=4.0",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "ruff>=0.8",
     "pre-commit>=4.0",
 ]
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]
