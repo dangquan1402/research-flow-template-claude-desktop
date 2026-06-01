@@ -91,7 +91,7 @@ Write to `outputs/examples/{example-slug}.py`:
 """
 Example: {what this demonstrates}
 Finding: {finding-slug}
-Run: python outputs/examples/{example-slug}.py
+Run: uv run python outputs/examples/{example-slug}.py
 """
 # ... working code that demonstrates the finding ...
 ```
@@ -121,12 +121,16 @@ Run: python outputs/examples/{example-slug}.py
 
 For any `.py` examples generated:
 ```bash
+mkdir -p outputs/examples
 for f in outputs/examples/*.py; do
+    [ -e "$f" ] || continue
     echo "=== Running: $f ==="
-    python "$f"
+    uv run python "$f"
     echo ""
 done
 ```
+
+> `uv add <pkg>` first for any import not already in `pyproject.toml`.
 
 Verify they produce the expected output. Fix any that fail.
 

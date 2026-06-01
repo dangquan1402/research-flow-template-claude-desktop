@@ -106,9 +106,12 @@ staleness_days: 0
 
 ### Step 7: Commit
 
+Experiments run on a `hypothesis/` branch, so use the `hypothesis(...)` prefix (one of the four sanctioned git-flow types — `experiment(...)` is not one). If you run on a different typed branch, match its type.
+
 ```bash
 git add experiments/ memory/
-git commit -m "experiment({scope}): {brief description of result}"
+git commit -m "hypothesis({scope}): {brief description of result}"
+git push
 ```
 
 ## Conventions

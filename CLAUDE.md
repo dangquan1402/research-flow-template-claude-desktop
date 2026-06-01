@@ -9,8 +9,9 @@ Three layers (from Karpathy's LLM Wiki pattern):
 2. **Working Memory** (`memory/`) — LLM-maintained markdown pages. Entities, findings, themes, open questions. Updated every cycle.
 3. **Schema** (this file) — conventions, structure, workflows.
 
-Plus a **validation & output layer**:
-4. **Outputs** (`outputs/`) — deliverables, evidence, verification, examples, critiques.
+Plus a **goal + validation/output layer**:
+4. **Goals** (`goals/`) — active research-goal definitions, one markdown file per goal. Created by `/research` (see frontmatter convention under "Conventions"); read by every downstream skill (`/analyze`, `/synthesize`, `/evidence`, `/verify`, `/examples`, `/critique`). A top-level sibling of `memory/` and `outputs/`, not a child of `memory/`.
+5. **Outputs** (`outputs/`) — deliverables, evidence, verification, examples, critiques.
 
 ```
 outputs/
@@ -23,7 +24,7 @@ outputs/
 
 ## Commands
 
-- `uv sync` — install deps (loguru, pyyaml, pymupdf, tqdm; py>=3.11)
+- `uv sync` — install deps (loguru, pyyaml, pymupdf, tqdm, vastai; py>=3.11)
 - `uv add <pkg>` — add a dependency (torch, jax, numpy, etc. — bring your own ML framework)
 - `uv run ruff check .` / `uv run ruff format .` — lint/format (line-length 100, rules `E,F,I,W`)
 - `uv run pre-commit run --all-files` — run all pre-commit hooks
@@ -34,7 +35,9 @@ outputs/
 
 - **`block-source-modification.sh`** (PreToolUse, `Edit`) — rejects `Edit` on anything under `sources/`. Sources are immutable; create a new `memory/findings/` page instead.
 - **`block-commit-protected-branch.sh`** (PreToolUse, `Bash`) — blocks `git commit` while on `main`. Create a `research/`, `hypothesis/`, `synthesis/`, or `review/` branch first.
-- **`post-memory-update.sh`** (PostToolUse, `Edit|Write`) — after editing anything in `memory/` (other than `index.md`/`log.md`/`entity-registry.json`), prints a reminder to update `memory/index.md` and append to `memory/log.md`. Do it in the same turn.
+- **`post-memory-update.sh`** (PostToolUse, `Edit|Write`) — after editing anything in `memory/` (other than `index.md`/`log.md`/`entity-registry.json`/`.gitkeep`), prints a reminder to update `memory/index.md` and append to `memory/log.md`. Do it in the same turn.
+
+Note: `block-source-modification.sh` covers `Edit`, `Write` (overwriting an existing source — new source files are allowed), and `Bash` (mutate-in-place/delete ops like `rm`/`sed -i`/`truncate`/`dd of=` targeting `sources/`). The `Bash` guard is best-effort, not exhaustive, and deliberately allows `cp`/`mv`/`curl -o`/redirects since those are the ingest paths for new sources.
 
 ## Git Flow for Research
 
@@ -91,7 +94,7 @@ memory/
 ```
 
 ### Memory Rules
-- Every memory page has YAML frontmatter: `title`, `created`, `updated`, `source`, `confidence` (high/medium/low), `tags`
+- Every memory page has YAML frontmatter: `title`, `created`, `updated`, `source`, `confidence` (high/medium/low), `verification` (source/analysis/unverified/gap), `tags`, `related`, `staleness_days`. See `docs/memory-page-template.md` for the canonical block and per-type variants.
 - `index.md` is updated after every ingest/analyze/synthesize operation
 - `log.md` is append-only with format: `## [YYYY-MM-DD] operation | subject`
 - Findings reference their source with `[source-slug]` citations
@@ -119,6 +122,7 @@ memory/
 11. **Lint** (`/lint`) — Health-check memory: orphans, contradictions, staleness, missing cross-refs
 
 **Ingest helpers:**
+- **`/import`** — Bulk-import an existing project (code repo, docs folder, notes) into the research flow in one pass: maps structure, classifies artifacts, copies them to `sources/`, and scaffolds initial memory. Use instead of `/analyze` when onboarding a whole project rather than ingesting one source at a time.
 - **`/read-pdf`** — Render a PDF (paper, report, scan) to one PNG per page via PyMuPDF, then read the images directly. Preserves figures, tables, equations, and scanned text that text extraction would lose. Output goes to `sources/_pdf-images/<slug>/`.
 
 **Infrastructure helpers:**
@@ -126,6 +130,9 @@ memory/
 - **`/quickstart`** — End-to-end pipeline canary on Vast.ai using the bundled `examples/quickstart/` demo. Automates scp/launch/poll/sync; defers `/research`, `/vastai rent`, `/experiment`, `/synthesize`, `/vastai terminate` to the user. Use after fresh setup or when debugging a broken pipeline. See [`docs/sample-pipeline.md`](docs/sample-pipeline.md).
 
 Steps 7-10 form the **validation & presentation layer** — they can be run in any order after synthesis, and each strengthens the others (e.g., verification failures inform critique, examples clarify evidence).
+
+**Setup / bootstrap (run once):**
+- **`/setup`** — One-shot project bootstrap: checks for the GitHub CLI and installs it for your OS if missing, runs `gh auth login`, asks for your project name, creates the repo, and links a GitHub Project board. Run once after cloning the template (see README → Setup), not part of the research loop.
 
 ## Experiment Workflow
 
@@ -197,8 +204,9 @@ Pages track `staleness_days` in frontmatter. `/lint` increments this. Pages >30 
 - One finding per file in `findings/`
 - One entity per file in `entities/`
 - Themes can reference multiple findings
-- Sources are immutable after creation (enforced by hook)
+- Sources are immutable after creation (`Edit`/`Write`-overwrite are hook-blocked, plus a best-effort `Bash` guard; treat as a hard rule regardless)
 - Always run `pre-commit` and `ruff` after coding changes
 - Memory page frontmatter templates in `docs/memory-page-template.md`
+- Goal files (`goals/{slug}.md`) use frontmatter: `title`, `created`, `issue`, `status` (active/resolved), `scope`, `success_criteria` (created by `/research`)
 - `experiments/` is a blank scaffold — add your own scripts and framework
 - Dependencies managed with `uv` — install: `uv sync`, add: `uv add <pkg>`, run: `uv run <cmd>`

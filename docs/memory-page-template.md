@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Memory Templates
-nav_order: 6
+nav_order: 8
 ---
 
 # Memory Page Template
@@ -196,6 +196,30 @@ tags: [architecture, training, data]
 
 [Under what circumstances this decision should be revisited]
 ```
+
+## Entity Registry Schema
+
+`memory/entity-registry.json` is the dedup index — check it before creating any
+`memory/entities/<slug>.md` page. It ships seeded as an empty object `{}`. Keys
+are entity slugs; each value records enough to detect duplicates and locate the
+page:
+
+```json
+{
+  "transformer-architecture": {
+    "title": "Transformer Architecture",
+    "type": "concept",
+    "aliases": ["transformers", "self-attention model"],
+    "file": "memory/entities/transformer-architecture.md",
+    "created": "YYYY-MM-DD",
+    "updated": "YYYY-MM-DD"
+  }
+}
+```
+
+- **type**: `person | org | concept | tool | paper | dataset | model`
+- **aliases**: alternate names `/lint` and `/analyze` match against before creating a new page
+- **file**: path to the entity page (kept in sync when pages move)
 
 ## Theme Template
 

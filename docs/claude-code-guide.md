@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Claude Code Guide
-nav_order: 4
+nav_order: 6
 ---
 
 # Claude Code Setup Guide
@@ -73,8 +73,10 @@ When you run `claude` in this repo, it loads the configuration from `.claude/` a
 │   ├── block-commit-protected-branch.sh  # PreToolUse: reject git commit on main
 │   └── post-memory-update.sh          # PostToolUse: remind to update index/log
 └── skills/
+    ├── setup.md         # /setup skill (one-shot project bootstrap)
     ├── research.md      # /research skill
     ├── analyze.md       # /analyze skill
+    ├── import.md        # /import skill (bulk-import a project)
     ├── synthesize.md    # /synthesize skill
     ├── experiment.md    # /experiment skill
     ├── distill.md       # /distill skill
@@ -83,6 +85,8 @@ When you run `claude` in this repo, it loads the configuration from `.claude/` a
     ├── examples.md      # /examples skill
     ├── critique.md      # /critique skill
     ├── lint.md          # /lint skill
+    ├── vastai.md        # /vastai skill (GPU instances on Vast.ai)
+    ├── quickstart.md    # /quickstart skill (pipeline canary)
     └── read-pdf/        # /read-pdf skill (has helper scripts)
         ├── SKILL.md
         └── scripts/pdf_to_images.py
@@ -238,6 +242,7 @@ The YAML frontmatter tells Claude Code the skill name and whether users can invo
 
 | Skill | Purpose |
 |---|---|
+| `/setup` | One-shot project bootstrap — check/install `gh`, log in, create repo, link Project board (run once after cloning) |
 | `/research` | Define a new research goal, create GitHub issue, branch, goal file |
 | `/analyze` | Ingest a source (URL/file/topic), extract findings and entities, update memory |
 | `/synthesize` | Consolidate findings into themes, resolve contradictions, produce output |
@@ -251,6 +256,7 @@ The YAML frontmatter tells Claude Code the skill name and whether users can invo
 | `/read-pdf` | Render a PDF to images page-by-page and read them (preserves figures/tables) |
 | `/import` | Bulk-import an existing project — copies artifacts to `sources/`, extracts findings + entities, scaffolds memory in one pass |
 | `/vastai` | Rent and manage GPU instances on Vast.ai (rent, ssh, jupyter, sync, terminate). State tracked per-project in `experiments/.vastai-instance.json` |
+| `/quickstart` | End-to-end pipeline canary on Vast.ai using the bundled `examples/quickstart/` demo |
 
 **Skills vs CLAUDE.md:**
 
@@ -289,10 +295,15 @@ research-flow-template-claude-desktop/
 │   ├── configs/sweeps/        # Sweep configs (user-defined)
 │   └── results/               # run-log.jsonl + result files
 │
-└── docs/                      # Human-readable documentation
+└── docs/                      # Human-readable documentation (8 guides)
+    ├── claude-code-quickstart.md  # Start-here entry point
+    ├── getting-started.md     # Prerequisites and first session
+    ├── pdf-to-agents-quickstart.md # PDF → memory → issues → agent team
+    ├── sample-pipeline.md     # 15-min end-to-end canary on Vast.ai
     ├── claude-code-guide.md   # This file
     ├── git-workflow.md        # Branch strategy and multi-agent dispatch
-    └── memory-page-template.md # Frontmatter templates for memory pages
+    ├── memory-page-template.md # Frontmatter templates for memory pages
+    └── index.md               # Jekyll/Pages home
 ```
 
 **The three-layer memory model (from Karpathy's LLM Wiki pattern):**

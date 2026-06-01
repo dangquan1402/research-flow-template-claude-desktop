@@ -38,7 +38,7 @@ These are **sample versions** of files that, in a real run, would live at the ca
 ## How to use
 
 1. Run [`docs/sample-pipeline.md`](../../../docs/sample-pipeline.md) end-to-end yourself.
-2. After step 7 (rsync), compare your outputs to these:
+2. After step 7 (rsync), compare your outputs to these. Note `examples/quickstart/results/metrics.json` only exists *after* you run the pipeline (step 7); the `sample-run/` and `expected/` copies ship with the template:
    ```bash
    diff <(jq -S . examples/quickstart/results/metrics.json) \
         <(jq -S . examples/quickstart/sample-run/results/metrics.json)

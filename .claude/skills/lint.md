@@ -88,9 +88,16 @@ Append to `memory/log.md`:
 
 ### Step 11: Commit Fixes
 
+Lint runs on a `review/` branch (the commit hook blocks `main`). Create one first if you aren't already on a typed branch:
+
 ```bash
+# If on main, branch first (the review(memory): prefix matches the review/ branch type):
+git rev-parse --abbrev-ref HEAD | grep -qE '^(research|hypothesis|synthesis|review)/' \
+  || git checkout -b review/GH-{issue}-lint-memory
+
 git add memory/
 git commit -m "review(memory): lint — {fixes_count} fixes, {issues_count} issues flagged"
+git push -u origin HEAD
 ```
 
 ## Output

@@ -145,7 +145,17 @@ If merging to research branch:
 gh pr create \
   --title "Synthesis: {title}" \
   --base research/GH-{parent}-{slug} \
-  --body "## Synthesis Summary\n{summary}\n\n## Themes\n{themes}\n\n## Merged Hypotheses\n{list}"
+  --body "$(cat <<'EOF'
+## Synthesis Summary
+{summary}
+
+## Themes
+{themes}
+
+## Merged Hypotheses
+{list}
+EOF
+)"
 ```
 
 ## Output

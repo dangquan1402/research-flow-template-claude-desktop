@@ -16,7 +16,7 @@ Before any subcommand, verify the user's environment. Run these checks in order 
 ```bash
 which vastai
 ```
-If missing: `uv add vastai` (or `pip install vastai`). Ask user to install before continuing.
+`vastai` ships as a core dependency in `pyproject.toml`, so `uv sync` installs it — if `which vastai` fails, run `uv sync` (then invoke as `uv run vastai ...`). Ask the user to do this before continuing.
 
 ### 2. API key configured?
 ```bash

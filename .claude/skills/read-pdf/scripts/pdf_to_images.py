@@ -2,13 +2,15 @@
 """Render a PDF to PNG-per-page so Claude can read pages as images.
 
 Usage:
-    uv run python .claude/skills/read-pdf/scripts/pdf_to_images.py <pdf> [--out <dir>] [--dpi 200] [--pages 1-5]
+    uv run python .claude/skills/read-pdf/scripts/pdf_to_images.py <pdf> \
+        [--out <dir>] [--dpi 200] [--pages 1-5]
 
 Output:
     <out>/<pdf-stem>-p001.png, -p002.png, ...
     Default <out>: sources/_pdf-images/<pdf-stem>/
 Prints written paths to stdout (one per line). Status to stderr.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -51,7 +53,9 @@ def convert(pdf_path: Path, out_dir: Path, dpi: int, pages: str | None) -> list[
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("pdf", type=Path)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--dpi", type=int, default=200)

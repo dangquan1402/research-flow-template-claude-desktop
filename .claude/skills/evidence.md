@@ -68,7 +68,10 @@ print(f"Saved: outputs/evidence/{evidence-slug}.png")
 
 Run the script to generate the output:
 ```bash
-python outputs/evidence/{evidence-slug}.py
+# The evidence template imports matplotlib (charts often need numpy too) —
+# neither ships in pyproject.toml, so add what the script imports first:
+uv add matplotlib numpy
+uv run python outputs/evidence/{evidence-slug}.py
 ```
 
 **HTML Tables** (for rich formatting):
